@@ -1,0 +1,20 @@
+{
+	"node": "n8n-nodes-base.OxylabsAiStudio",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": [
+		"Data & Storage", "Productivity", "Miscellaneous", "Development", "Analytics", "Utility"
+	],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://aistudio.oxylabs.io/settings/api-key"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://aistudio.oxylabs.io/apps"
+			}
+		]
+	}
+}
