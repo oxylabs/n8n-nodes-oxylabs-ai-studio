@@ -46,7 +46,7 @@ export class OxylabsAiStudio implements INodeType {
 				],
 				default: 'scraper',
 				required: true,
-				description: 'Choose the resource to use'
+				description: 'Choose the resource to use',
 			},
 
 			// Scrape parameters
@@ -57,28 +57,29 @@ export class OxylabsAiStudio implements INodeType {
 				displayOptions: { show: { resource: ['scraper'] } },
 				default: '',
 				required: true,
-				description: 'The target URL to scrape'
+				description: 'The target URL to scrape',
 			},
-            {
-                displayName: 'Output Format',
-                name: 'scrapeOutputFormat',
-                type: 'options',
-                options: [
-                    { name: 'Markdown', value: 'markdown' },
-                    { name: 'JSON', value: 'json' },
-                ],
-                default: 'markdown',
-                displayOptions: { show: { resource: ['scraper'] } },
-                description: 'The desired output format. OpenAPI Schema is required for JSON output.',
-                required: true,
-            },
 			{
-				displayName: 'OpenAPI Schema (JSON)',
-				name: 'scrapeOpenapiSchema',
+				displayName: 'Output Format',
+				name: 'scrapeOutputFormat',
+				type: 'options',
+				options: [
+					{ name: 'Markdown', value: 'markdown' },
+					{ name: 'JSON', value: 'json' },
+				],
+				default: 'markdown',
+				displayOptions: { show: { resource: ['scraper'] } },
+				description: 'The format in which to return the extracted data. Choose between Markdown or JSON.',
+				required: true,
+			},
+			{
+				displayName: 'JSON Schema',
+				name: 'scrapeJsonPydanticSchema',
 				type: 'json',
 				displayOptions: { show: { resource: ['scraper'], scrapeOutputFormat: ['json'] } },
-				default: '',
-				description: 'JSON Schema for output data (required for JSON output)'
+				default: null,
+				description: 'OpenAPI JSON schema',
+				required: true,
 			},
 			{
 				displayName: 'Render JavaScript',
@@ -86,7 +87,7 @@ export class OxylabsAiStudio implements INodeType {
 				type: 'boolean',
 				default: false,
 				displayOptions: { show: { resource: ['scraper'] } },
-				description: 'Whether to render JavaScript on the page before extraction'
+				description: 'Whether to render JavaScript on the page before extraction',
 			},
 
 			// Crawl parameters
@@ -97,7 +98,7 @@ export class OxylabsAiStudio implements INodeType {
 				displayOptions: { show: { resource: ['crawler'] } },
 				default: '',
 				required: true,
-				description: 'The starting URL for the crawl'
+				description: 'The starting URL for the crawl',
 			},
 			{
 				displayName: 'Prompt',
@@ -105,7 +106,7 @@ export class OxylabsAiStudio implements INodeType {
 				type: 'string',
 				displayOptions: { show: { resource: ['crawler'] } },
 				default: '',
-				description: 'Instructions for what data to extract from crawled pages'
+				description: 'Instructions for what data to extract from crawled pages',
 			},
 			{
 				displayName: 'Output Format',
@@ -117,15 +118,15 @@ export class OxylabsAiStudio implements INodeType {
 				],
 				default: 'markdown',
 				displayOptions: { show: { resource: ['crawler'] } },
-				description: 'The desired output format per URL'
+				description: 'The desired output format per URL',
 			},
 			{
-				displayName: 'OpenAPI Schema (JSON)',
-				name: 'crawlOpenapiSchema',
+				displayName: 'JSON Schema',
+				name: 'crawlJsonPydanticSchema',
 				type: 'json',
 				displayOptions: { show: { resource: ['crawler'], crawlOutputFormat: ['json'] } },
-				default: '',
-				description: 'JSON Schema for output data (required for JSON output)'
+				default: '{}',
+				description: 'The openapi schema in JSON format that defines the structure of the output data. Required when output format is set to JSON.',
 			},
 			{
 				displayName: 'Render JavaScript',
@@ -133,7 +134,7 @@ export class OxylabsAiStudio implements INodeType {
 				type: 'boolean',
 				default: false,
 				displayOptions: { show: { resource: ['crawler'] } },
-				description: 'Whether to render JavaScript on the pages before extraction'
+				description: 'Whether to render JavaScript on the pages before extraction',
 			},
 			{
 				displayName: 'Max Results',
@@ -141,7 +142,7 @@ export class OxylabsAiStudio implements INodeType {
 				type: 'number',
 				displayOptions: { show: { resource: ['crawler'] } },
 				default: 25,
-				description: 'Maximum number of results to return. Maximum is 50.'
+				description: 'Maximum number of results to return. Maximum is 50.',
 			},
 
 			// Browse parameters
@@ -152,7 +153,7 @@ export class OxylabsAiStudio implements INodeType {
 				displayOptions: { show: { resource: ['browserAgent'] } },
 				default: '',
 				required: true,
-				description: 'The target URL for the browser agent to start at'
+				description: 'The target URL for the browser agent to start at',
 			},
 			{
 				displayName: 'Prompt',
@@ -160,7 +161,7 @@ export class OxylabsAiStudio implements INodeType {
 				type: 'string',
 				displayOptions: { show: { resource: ['browserAgent'] } },
 				default: '',
-				description: 'Instructions defining the actions the browser agent should perform'
+				description: 'Instructions defining the actions the browser agent should perform',
 			},
 			{
 				displayName: 'Output Format',
@@ -174,15 +175,15 @@ export class OxylabsAiStudio implements INodeType {
 				],
 				default: 'markdown',
 				displayOptions: { show: { resource: ['browserAgent'] } },
-				description: 'The desired output format'
+				description: 'The desired output format',
 			},
 			{
-				displayName: 'OpenAPI Schema (JSON)',
-				name: 'browseOpenapiSchema',
+				displayName: 'JSON Schema',
+				name: 'browseJsonPydanticSchema',
 				type: 'json',
 				displayOptions: { show: { resource: ['browserAgent'], browseOutputFormat: ['json'] } },
-				default: '',
-				description: 'JSON Schema for output data (required for JSON output)'
+				default: '{}',
+				description: 'The openapi schema in JSON format that defines the structure of the output data. Required when output format is set to JSON.',
 			},
 
 			// Search parameters
@@ -193,14 +194,15 @@ export class OxylabsAiStudio implements INodeType {
 				displayOptions: { show: { resource: ['search'] } },
 				default: '',
 				required: true,
-		},
+				description: 'The search query to use. For example, "weather in London".',
+			},
 			{
 				displayName: 'Limit',
 				name: 'searchLimit',
 				type: 'number',
 				displayOptions: { show: { resource: ['search'] } },
 				default: 10,
-				description: 'Maximum number of search results to return. Maximum is 50.'
+				description: 'Maximum number of search results to return. Maximum is 50.',
 			},
 			{
 				displayName: 'Return Contents',
@@ -208,7 +210,7 @@ export class OxylabsAiStudio implements INodeType {
 				type: 'boolean',
 				displayOptions: { show: { resource: ['search'] } },
 				default: true,
-				description: 'Whether to return markdown content of each search result'
+				description: 'Whether to return markdown content of each search result',
 			},
 			{
 				displayName: 'Render JavaScript',
@@ -216,7 +218,7 @@ export class OxylabsAiStudio implements INodeType {
 				type: 'boolean',
 				displayOptions: { show: { resource: ['search'] } },
 				default: false,
-				description: 'Whether to render JavaScript on the results pages'
+				description: 'Whether to render JavaScript on the results pages',
 			},
 		],
 	};
@@ -243,7 +245,13 @@ export class OxylabsAiStudio implements INodeType {
                                         render_html: render_javascript
 									};
 					if (output_format === 'json') {
-						const openapi_schema = JSON.parse(this.getNodeParameter('scrapeOpenapiSchema', i, {}) as string);
+						let openapi_schema = this.getNodeParameter('scrapeJsonPydanticSchema', i, {}) ?? {};
+						if (typeof openapi_schema === 'string') {
+							openapi_schema = openapi_schema.trim() ? JSON.parse(openapi_schema) : {};
+						}
+						if (typeof openapi_schema !== 'object' || openapi_schema === null) {
+							openapi_schema = {};
+						}
 						body.openapi_schema = openapi_schema;
 					}
 					responseData = await aiScraperService.scrape(body, 60000 * 2);
@@ -261,7 +269,13 @@ export class OxylabsAiStudio implements INodeType {
 										render_html: render_javascript,
 									};
 					if (output_format === 'json') {
-						const openapi_schema = JSON.parse(this.getNodeParameter('crawlOpenapiSchema', i, {}) as string);
+						let openapi_schema = this.getNodeParameter('crawlJsonPydanticSchema', i, {}) ?? {};
+						if (typeof openapi_schema === 'string') {
+							openapi_schema = openapi_schema.trim() ? JSON.parse(openapi_schema) : {};
+						}
+						if (typeof openapi_schema !== 'object' || openapi_schema === null) {
+							openapi_schema = {};
+						}
 						body.openapi_schema = openapi_schema;
 					}
           responseData = await aiCrawlerService.crawl(body, 60000 * 10);
@@ -274,7 +288,13 @@ export class OxylabsAiStudio implements INodeType {
                                         output_format: output_format,
 									};
 					if (output_format === 'json') {
-						const openapi_schema = JSON.parse(this.getNodeParameter('browseOpenapiSchema', i, {}) as string);
+						let openapi_schema = this.getNodeParameter('browseJsonPydanticSchema', i, {}) ?? {};
+						if (typeof openapi_schema === 'string') {
+							openapi_schema = openapi_schema.trim() ? JSON.parse(openapi_schema) : {};
+						}
+						if (typeof openapi_schema !== 'object' || openapi_schema === null) {
+							openapi_schema = {};
+						}
 						body.openapi_schema = openapi_schema;
 					}
 
