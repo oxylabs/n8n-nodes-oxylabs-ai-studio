@@ -3,7 +3,12 @@
 	"nodeVersion": "1.0",
 	"codexVersion": "1.0",
 	"categories": [
-		"Data & Storage", "Productivity", "Miscellaneous", "Development", "Analytics", "Utility"
+		"Data & Storage",
+		"Productivity",
+		"Miscellaneous",
+		"Development",
+		"Analytics",
+		"Utility"
 	],
 	"resources": {
 		"credentialDocumentation": [

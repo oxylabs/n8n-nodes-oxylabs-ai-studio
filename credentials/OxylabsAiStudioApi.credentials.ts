@@ -2,6 +2,7 @@ import {
 	IAuthenticateGeneric,
 	ICredentialType,
 	INodeProperties,
+	ICredentialTestRequest,
 } from 'n8n-workflow';
 
 export class OxylabsAiStudioApi implements ICredentialType {
@@ -32,6 +33,14 @@ export class OxylabsAiStudioApi implements ICredentialType {
 			headers: {
 				'x-api-key': '={{$credentials.apiKey}}',
 			},
+		},
+	};
+
+	test: ICredentialTestRequest = {
+		request: {
+			baseURL: '={{$credentials.apiUrl}}',
+			url: '/status',
+			method: 'GET',
 		},
 	};
 }

@@ -11,7 +11,6 @@ import { BrowserAgentService } from './sdk/services/browserAgent';
 import { AiSearchService } from './sdk/services/aiSearch';
 import { ScrapeOptions, CrawlOptions, BrowseOptions, SearchOptions } from './sdk/types';
 
-
 export class OxylabsAiStudio implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Oxylabs AI Studio',
@@ -69,7 +68,8 @@ export class OxylabsAiStudio implements INodeType {
 				],
 				default: 'markdown',
 				displayOptions: { show: { resource: ['scraper'] } },
-				description: 'The format in which to return the extracted data. Choose between Markdown or JSON.',
+				description:
+					'The format in which to return the extracted data. Choose between Markdown or JSON.',
 				required: true,
 			},
 			{
@@ -126,7 +126,8 @@ export class OxylabsAiStudio implements INodeType {
 				type: 'json',
 				displayOptions: { show: { resource: ['crawler'], crawlOutputFormat: ['json'] } },
 				default: '{}',
-				description: 'The openapi schema in JSON format that defines the structure of the output data. Required when output format is set to JSON.',
+				description:
+					'The openapi schema in JSON format that defines the structure of the output data. Required when output format is set to JSON.',
 			},
 			{
 				displayName: 'Render JavaScript',
@@ -183,7 +184,8 @@ export class OxylabsAiStudio implements INodeType {
 				type: 'json',
 				displayOptions: { show: { resource: ['browserAgent'], browseOutputFormat: ['json'] } },
 				default: '{}',
-				description: 'The openapi schema in JSON format that defines the structure of the output data. Required when output format is set to JSON.',
+				description:
+					'The openapi schema in JSON format that defines the structure of the output data. Required when output format is set to JSON.',
 			},
 
 			// Search parameters
@@ -239,11 +241,16 @@ export class OxylabsAiStudio implements INodeType {
 				if (resource === 'scraper') {
 					const url = this.getNodeParameter('scrapeUrl', i) as string;
 					const output_format = this.getNodeParameter('scrapeOutputFormat', i) as string;
-					const render_javascript = this.getNodeParameter('scrapeRenderJavascript', i, false) as boolean;
-					const body: ScrapeOptions = { url: url,
-                                        output_format: output_format,
-                                        render_html: render_javascript
-									};
+					const render_javascript = this.getNodeParameter(
+						'scrapeRenderJavascript',
+						i,
+						false,
+					) as boolean;
+					const body: ScrapeOptions = {
+						url: url,
+						output_format: output_format,
+						render_html: render_javascript,
+					};
 					if (output_format === 'json') {
 						let openapi_schema = this.getNodeParameter('scrapeJsonPydanticSchema', i, {}) ?? {};
 						if (typeof openapi_schema === 'string') {
@@ -260,14 +267,19 @@ export class OxylabsAiStudio implements INodeType {
 					const crawl_prompt = this.getNodeParameter('crawlPrompt', i) as string;
 					const output_format = this.getNodeParameter('crawlOutputFormat', i) as string;
 					const max_pages = this.getNodeParameter('crawlMaxPages', i, 25) as number;
-					const render_javascript = this.getNodeParameter('crawlRenderJavascript', i, false) as boolean;
+					const render_javascript = this.getNodeParameter(
+						'crawlRenderJavascript',
+						i,
+						false,
+					) as boolean;
 
-					const body: CrawlOptions = { url: url,
-										crawl_prompt: crawl_prompt,
-										output_format: output_format,
-										max_pages: max_pages,
-										render_html: render_javascript,
-									};
+					const body: CrawlOptions = {
+						url: url,
+						crawl_prompt: crawl_prompt,
+						output_format: output_format,
+						max_pages: max_pages,
+						render_html: render_javascript,
+					};
 					if (output_format === 'json') {
 						let openapi_schema = this.getNodeParameter('crawlJsonPydanticSchema', i, {}) ?? {};
 						if (typeof openapi_schema === 'string') {
@@ -278,15 +290,16 @@ export class OxylabsAiStudio implements INodeType {
 						}
 						body.openapi_schema = openapi_schema;
 					}
-          responseData = await aiCrawlerService.crawl(body, 60000 * 10);
+					responseData = await aiCrawlerService.crawl(body, 60000 * 10);
 				} else if (resource === 'browserAgent') {
 					const url = this.getNodeParameter('browseUrl', i) as string;
 					const user_prompt = this.getNodeParameter('browseUserPrompt', i) as string;
 					const output_format = this.getNodeParameter('browseOutputFormat', i) as string;
-					const body: BrowseOptions = { url: url,
-                                        browse_prompt: user_prompt,
-                                        output_format: output_format,
-									};
+					const body: BrowseOptions = {
+						url: url,
+						browse_prompt: user_prompt,
+						output_format: output_format,
+					};
 					if (output_format === 'json') {
 						let openapi_schema = this.getNodeParameter('browseJsonPydanticSchema', i, {}) ?? {};
 						if (typeof openapi_schema === 'string') {
@@ -303,13 +316,25 @@ export class OxylabsAiStudio implements INodeType {
 					const query = this.getNodeParameter('searchQuery', i) as string;
 					const limit = this.getNodeParameter('searchLimit', i, 10) as number;
 					const return_content = this.getNodeParameter('searchReturnContent', i, true) as boolean;
-					const render_javascript = this.getNodeParameter('searchRenderJavascript', i, false) as boolean;
+					const render_javascript = this.getNodeParameter(
+						'searchRenderJavascript',
+						i,
+						false,
+					) as boolean;
 					const body: SearchOptions = { query, limit, render_javascript, return_content };
 					responseData = await aiSearchService.search(body, 60000 * 3);
 				} else {
-                    throw new NodeOperationError(this.getNode(), `Unknown resource: ${resource}`, { itemIndex: i });
-                }
-				returnData.push({ json: {status: responseData.status, data: responseData.data, message: responseData.message} });
+					throw new NodeOperationError(this.getNode(), `Unknown resource: ${resource}`, {
+						itemIndex: i,
+					});
+				}
+				returnData.push({
+					json: {
+						status: responseData.status,
+						data: responseData.data,
+						message: responseData.message,
+					},
+				});
 			} catch (error) {
 				if (this.continueOnFail()) {
 					returnData.push({ json: { error: error.message }, pairedItem: i });
