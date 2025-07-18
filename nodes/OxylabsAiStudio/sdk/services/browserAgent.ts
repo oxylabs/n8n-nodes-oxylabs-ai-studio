@@ -1,15 +1,5 @@
 import { BrowseOptions, RunResponse, ApiResponse } from '../types';
-import { IExecuteFunctions, IHttpRequestOptions } from 'n8n-workflow';
-
-declare function setTimeout(
-	handler: (...args: any[]) => void,
-	timeout?: number,
-	...args: any[]
-): number;
-
-function delay(ms: number): Promise<void> {
-	return new Promise((resolve) => setTimeout(resolve, ms));
-}
+import { IExecuteFunctions, IHttpRequestOptions, sleep } from 'n8n-workflow';
 
 /**
  * Browser Agent Service
@@ -125,7 +115,7 @@ export class BrowserAgentService {
 					`Browsing failed: ${runStatus.run.error || runStatus.run.message || 'Unknown error'}`,
 				);
 			}
-			await delay(pollInterval);
+			await sleep(pollInterval);
 		}
 		throw new Error(`Browsing timeout after ${timeout}ms`);
 	}

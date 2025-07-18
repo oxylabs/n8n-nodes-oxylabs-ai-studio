@@ -5,17 +5,7 @@ import {
 	ApiResponse,
 	SearchResult,
 } from '../types';
-import { IExecuteFunctions, IHttpRequestOptions } from 'n8n-workflow';
-
-declare function setTimeout(
-	handler: (...args: any[]) => void,
-	timeout?: number,
-	...args: any[]
-): number;
-
-function delay(ms: number): Promise<void> {
-	return new Promise((resolve) => setTimeout(resolve, ms));
-}
+import { IExecuteFunctions, IHttpRequestOptions, sleep } from 'n8n-workflow';
 
 /**
  * AI-Search Service
@@ -104,7 +94,7 @@ export class AiSearchService {
 		while (Date.now() - startTime < timeout) {
 			const response = await this.getSearchRunData(runId);
 			if (response.status === 'processing') {
-				await delay(pollInterval);
+				await sleep(pollInterval);
 				continue;
 			} else if (response.status === 'completed') {
 				return {
