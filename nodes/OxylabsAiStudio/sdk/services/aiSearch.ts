@@ -6,18 +6,15 @@ import {
 	SearchResult,
 } from '../types';
 import { IExecuteFunctions, IHttpRequestOptions, sleep } from 'n8n-workflow';
+import { BaseService } from './baseService.js';
 
 /**
  * AI-Search Service
  * Handles all AI-Search related API calls
  */
-export class AiSearchService {
-	private n8n: IExecuteFunctions;
-	private apiUrl: string;
-
+export class AiSearchService extends BaseService {
 	constructor(n8n: IExecuteFunctions, apiUrl: string) {
-		this.n8n = n8n;
-		this.apiUrl = apiUrl;
+		super(n8n, apiUrl);
 	}
 
 	/**
@@ -46,11 +43,7 @@ export class AiSearchService {
 			body: payload,
 			json: true,
 		};
-		return await this.n8n.helpers.httpRequestWithAuthentication.call(
-			this.n8n,
-			'oxylabsAiStudioApi',
-			requestOptions,
-		);
+		return await this.makeRequestWithRetry(requestOptions);
 	}
 
 	/**
@@ -70,11 +63,7 @@ export class AiSearchService {
 			qs: { run_id: runId },
 			json: true,
 		};
-		return await this.n8n.helpers.httpRequestWithAuthentication.call(
-			this.n8n,
-			'oxylabsAiStudioApi',
-			requestOptions,
-		);
+		return await this.makeRequestWithRetry(requestOptions);
 	}
 
 	/**

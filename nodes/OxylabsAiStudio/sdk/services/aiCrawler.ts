@@ -1,18 +1,15 @@
 import { CrawlOptions, RunResponse, ApiResponse } from '../types.js';
 
 import { IExecuteFunctions, IHttpRequestOptions, sleep } from 'n8n-workflow';
+import { BaseService } from './baseService.js';
 
 /**
  * AI-Crawler Service
  * Handles all AI-Crawler related API calls
  */
-export class AiCrawlerService {
-	private n8n: IExecuteFunctions;
-	private apiUrl: string;
-
+export class AiCrawlerService extends BaseService {
 	constructor(n8n: IExecuteFunctions, apiUrl: string) {
-		this.n8n = n8n;
-		this.apiUrl = apiUrl;
+		super(n8n, apiUrl);
 	}
 
 	/**
@@ -39,35 +36,7 @@ export class AiCrawlerService {
 			body: payload,
 			json: true,
 		};
-		return await this.n8n.helpers.httpRequestWithAuthentication.call(
-			this.n8n,
-			'oxylabsAiStudioApi',
-			requestOptions,
-		);
-	}
-
-	/**
-	 * Get crawling steps (GET /extract/run/steps)
-	 */
-	async getCrawlRunSteps(runId: string): Promise<any> {
-		if (!runId) {
-			throw new Error('run_id is required');
-		}
-		const requestOptions: IHttpRequestOptions = {
-			method: 'GET',
-			url: `${this.apiUrl}/extract/run/steps`,
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json',
-			},
-			qs: { run_id: runId },
-			json: true,
-		};
-		return await this.n8n.helpers.httpRequestWithAuthentication.call(
-			this.n8n,
-			'oxylabsAiStudioApi',
-			requestOptions,
-		);
+		return await this.makeRequestWithRetry(requestOptions);
 	}
 
 	/**
@@ -87,11 +56,7 @@ export class AiCrawlerService {
 			qs: { run_id: runId },
 			json: true,
 		};
-		return await this.n8n.helpers.httpRequestWithAuthentication.call(
-			this.n8n,
-			'oxylabsAiStudioApi',
-			requestOptions,
-		);
+		return await this.makeRequestWithRetry(requestOptions);
 	}
 
 	/**
@@ -99,7 +64,7 @@ export class AiCrawlerService {
 	 */
 	async crawl(
 		options: CrawlOptions,
-		timeout = 240000,
+		timeout = 600000, // 10 minutes (matching Python CRAWLER_TIMEOUT_SECONDS)
 		pollInterval = 5000,
 	): Promise<ApiResponse<Record<string, any>[] | null>> {
 		const submitResult = await this.submitCrawlRequest(options);
@@ -107,19 +72,43 @@ export class AiCrawlerService {
 		if (!runId) {
 			throw new Error('No run ID returned from crawl request');
 		}
+
 		const startTime = Date.now();
+		
 		while (Date.now() - startTime < timeout) {
-			const runStatus = await this.getCrawlRunSteps(runId);
-			const run_status = runStatus.run.status;
-			if (run_status === 'completed' || run_status === 'success') {
-				return await this.getCrawlRunData(runId);
-			} else if (run_status === 'failed' || run_status === 'error') {
-				throw new Error(
-					`Crawling failed: ${runStatus.error || runStatus.message || 'Unknown error'}`,
-				);
-			}
+			try {
+				const response = await this.getCrawlRunData(runId);
+
+				// Check status in response body
+				if (response.status === 'processing') {
+					await sleep(pollInterval);
+					continue;
+				}
+
+				if (response.status === 'completed') {
+					return {
+						status: response.status,
+						message: response.error_code || undefined,
+						data: response.data || null,
+					};
+				}
+
+				if (response.status === 'failed') {
+					return {
+						status: response.status,
+						message: response.error_code || undefined,
+						data: null,
+					}
+				}
+
 			await sleep(pollInterval);
+		} catch (error: any) {
+			// 429 and 5xx are already handled by makeRequestWithRetry
+			// If we get here, it's a non-retryable error, so throw immediately
+			throw error;
 		}
+	}
+
 		throw new Error(`Crawling timeout after ${timeout}ms`);
 	}
 }

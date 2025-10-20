@@ -1,17 +1,14 @@
 import { ScrapeOptions, RunResponse, RunStatusResponse } from '../types.js';
 import { IExecuteFunctions, IHttpRequestOptions, sleep } from 'n8n-workflow';
+import { BaseService } from './baseService.js';
 
 /**
  * AI-Scraper Service
  * Handles all AI-Scraper related API calls
  */
-export class AiScraperService {
-	private n8n: IExecuteFunctions;
-	private apiUrl: string;
-
+export class AiScraperService extends BaseService {
 	constructor(n8n: IExecuteFunctions, apiUrl: string) {
-		this.n8n = n8n;
-		this.apiUrl = apiUrl;
+		super(n8n, apiUrl);
 	}
 
 	async submitScrapeRequest(options: ScrapeOptions): Promise<RunResponse> {
@@ -33,11 +30,7 @@ export class AiScraperService {
 			body: payload,
 			json: true,
 		};
-		return await this.n8n.helpers.httpRequestWithAuthentication.call(
-			this.n8n,
-			'oxylabsAiStudioApi',
-			requestOptions,
-		);
+		return await this.makeRequestWithRetry(requestOptions);
 	}
 
 	/**
@@ -57,11 +50,7 @@ export class AiScraperService {
 			qs: { run_id: runId },
 			json: true,
 		};
-		return await this.n8n.helpers.httpRequestWithAuthentication.call(
-			this.n8n,
-			'oxylabsAiStudioApi',
-			requestOptions,
-		);
+		return await this.makeRequestWithRetry(requestOptions);
 	}
 
 	/**
@@ -81,11 +70,7 @@ export class AiScraperService {
 			qs: { run_id: runId },
 			json: true,
 		};
-		return await this.n8n.helpers.httpRequestWithAuthentication.call(
-			this.n8n,
-			'oxylabsAiStudioApi',
-			requestOptions,
-		);
+		return await this.makeRequestWithRetry(requestOptions);
 	}
 
 	/**
@@ -101,14 +86,17 @@ export class AiScraperService {
 		while (Date.now() - startTime < timeout) {
 			const runStatus = await this.getScrapeRun(runId);
 			const run_status = runStatus.status;
-			if (run_status === 'completed' || run_status === 'success') {
+			if (run_status === 'completed') {
 				return await this.getScrapeRunData(runId);
-			} else if (run_status === 'failed' || run_status === 'error') {
-				throw new Error(
-					`Scraping failed: ${runStatus.error || runStatus.message || 'Unknown error'}`,
-				);
+			} else if (run_status === 'failed') {
+				return {
+					status: run_status,
+					message: runStatus.error_code || undefined,
+					data: null,
+				}
 			}
 			await sleep(pollInterval);
+
 		}
 		throw new Error(`Scraping timeout after ${timeout}ms`);
 	}

@@ -4,7 +4,7 @@ import type {
 	INodeType,
 	INodeTypeDescription,
 } from 'n8n-workflow';
-import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
+import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import { AiCrawlerService } from './sdk/services/aiCrawler';
 import { AiScraperService } from './sdk/services/aiScraper';
 import { BrowserAgentService } from './sdk/services/browserAgent';
@@ -22,8 +22,8 @@ export class OxylabsAiStudio implements INodeType {
 		defaults: {
 			name: 'Oxylabs AI Studio',
 		},
-		inputs: [NodeConnectionType.Main],
-		outputs: [NodeConnectionType.Main],
+		inputs: [NodeConnectionTypes.Main],
+		outputs: [NodeConnectionTypes.Main],
 		usableAsTool: true,
 		credentials: [
 			{

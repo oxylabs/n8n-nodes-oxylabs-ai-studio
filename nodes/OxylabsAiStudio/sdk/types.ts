@@ -30,7 +30,7 @@ export interface RunResponse {
 export interface RunStatusResponse {
 	status: RunStatus;
 	message?: string;
-	error?: string;
+	error_code?: string;
 }
 
 export interface ScrapeOptions {

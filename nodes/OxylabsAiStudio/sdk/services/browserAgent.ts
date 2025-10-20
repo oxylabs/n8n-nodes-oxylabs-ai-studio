@@ -1,17 +1,14 @@
 import { BrowseOptions, RunResponse, ApiResponse } from '../types';
 import { IExecuteFunctions, IHttpRequestOptions, sleep } from 'n8n-workflow';
+import { BaseService } from './baseService.js';
 
 /**
  * Browser Agent Service
  * Handles all Browser Agent related API calls
  */
-export class BrowserAgentService {
-	private n8n: IExecuteFunctions;
-	private apiUrl: string;
-
+export class BrowserAgentService extends BaseService {
 	constructor(n8n: IExecuteFunctions, apiUrl: string) {
-		this.n8n = n8n;
-		this.apiUrl = apiUrl;
+		super(n8n, apiUrl);
 	}
 
 	/**
@@ -36,11 +33,7 @@ export class BrowserAgentService {
 			body: payload,
 			json: true,
 		};
-		return await this.n8n.helpers.httpRequestWithAuthentication.call(
-			this.n8n,
-			'oxylabsAiStudioApi',
-			requestOptions,
-		);
+		return await this.makeRequestWithRetry(requestOptions);
 	}
 
 	/**
@@ -60,11 +53,7 @@ export class BrowserAgentService {
 			qs: { run_id: runId },
 			json: true,
 		};
-		return await this.n8n.helpers.httpRequestWithAuthentication.call(
-			this.n8n,
-			'oxylabsAiStudioApi',
-			requestOptions,
-		);
+		return await this.makeRequestWithRetry(requestOptions);
 	}
 
 	/**
@@ -84,11 +73,7 @@ export class BrowserAgentService {
 			qs: { run_id: runId },
 			json: true,
 		};
-		return await this.n8n.helpers.httpRequestWithAuthentication.call(
-			this.n8n,
-			'oxylabsAiStudioApi',
-			requestOptions,
-		);
+		return await this.makeRequestWithRetry(requestOptions);
 	}
 
 	/**
@@ -106,13 +91,19 @@ export class BrowserAgentService {
 		}
 		const startTime = Date.now();
 		while (Date.now() - startTime < timeout) {
-			const runStatus = await this.getBrowseRunSteps(runId);
-			const run_status = runStatus.run.status;
-			if (run_status === 'completed' || run_status === 'success') {
-				return await this.getBrowseRunData(runId);
-			} else if (run_status === 'failed' || run_status === 'error') {
+				const response = await this.getBrowseRunData(runId);
+			if (response.status === 'processing') {
+				await sleep(pollInterval);
+				continue;
+			}
+			
+			if (response.status === 'completed') {
+				return response;
+			}
+			
+			if (response.status === 'failed') {
 				throw new Error(
-					`Browsing failed: ${runStatus.run.error || runStatus.run.message || 'Unknown error'}`,
+					`Browsing failed: ${response.error_code || response.message || 'Unknown error'}`,
 				);
 			}
 			await sleep(pollInterval);
