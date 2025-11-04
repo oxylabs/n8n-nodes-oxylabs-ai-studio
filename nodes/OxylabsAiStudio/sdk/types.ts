@@ -7,9 +7,26 @@ export enum RunStatus {
 	ERROR = 'error',
 }
 
-export enum OutputFormat {
+// App-specific output format lists
+export enum SCRAPER_OUTPUT_FORMAT {
 	MARKDOWN = 'markdown',
 	JSON = 'json',
+	CSV = 'csv',
+	SCREENSHOT = 'screenshot',
+}
+
+export enum CRAWLER_OUTPUT_FORMAT {
+	MARKDOWN = 'markdown',
+	JSON = 'json',
+	CSV = 'csv',
+}
+
+export enum BROWSER_AGENT_OUTPUT_FORMAT {
+	MARKDOWN = 'markdown',
+	JSON = 'json',
+	CSV = 'csv',
+	HTML = 'html',
+	SCREENSHOT = 'screenshot',
 }
 
 export interface ApiResponse<T = any> {
@@ -36,7 +53,7 @@ export interface RunStatusResponse {
 export interface ScrapeOptions {
 	url: string;
 	user_prompt?: string;
-	output_format?: OutputFormat | string;
+	output_format?: ScraperOutputFormat | string;
 	openapi_schema?: Record<string, any>;
 	render_html?: boolean;
 }
@@ -44,7 +61,7 @@ export interface ScrapeOptions {
 export interface CrawlOptions {
 	url: string;
 	crawl_prompt: string;
-	output_format?: OutputFormat | string;
+	output_format?: CrawlerOutputFormat | string;
 	openapi_schema?: Record<string, any>;
 	max_pages?: number;
 	render_html?: boolean;
@@ -53,7 +70,7 @@ export interface CrawlOptions {
 export interface BrowseOptions {
 	url: string;
 	browse_prompt: string;
-	output_format: OutputFormat | string;
+	output_format: BrowserAgentOutputFormat | string;
 	openapi_schema?: Record<string, any>;
 }
 
