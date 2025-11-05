@@ -8,20 +8,20 @@ export enum RunStatus {
 }
 
 // App-specific output format lists
-export enum SCRAPER_OUTPUT_FORMAT {
+export enum ScraperOutputFormat {
 	MARKDOWN = 'markdown',
 	JSON = 'json',
 	CSV = 'csv',
 	SCREENSHOT = 'screenshot',
 }
 
-export enum CRAWLER_OUTPUT_FORMAT {
+export enum CrawlerOutputFormat {
 	MARKDOWN = 'markdown',
 	JSON = 'json',
 	CSV = 'csv',
 }
 
-export enum BROWSER_AGENT_OUTPUT_FORMAT {
+export enum BrowserAgentOutputFormat {
 	MARKDOWN = 'markdown',
 	JSON = 'json',
 	CSV = 'csv',
