@@ -172,11 +172,11 @@ export class OxylabsAiStudio implements INodeType {
 				name: 'browseOutputFormat',
 				type: 'options',
 				options: [
-					{ name: 'Markdown', value: 'markdown' },
+					{ name: 'CSV', value: 'csv' },
 					{ name: 'HTML', value: 'html' },
 					{ name: 'JSON', value: 'json' },
+					{ name: 'Markdown', value: 'markdown' },
 					{ name: 'Screenshot', value: 'screenshot' },
-					{ name: 'CSV', value: 'csv' },
 				],
 				default: 'markdown',
 				displayOptions: { show: { resource: ['browserAgent'] } },
