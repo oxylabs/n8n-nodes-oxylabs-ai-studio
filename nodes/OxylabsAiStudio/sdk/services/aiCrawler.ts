@@ -23,7 +23,7 @@ export class AiCrawlerService extends BaseService {
 			render_html: options.render_html || false,
 			return_sources_limit: options.max_pages || 25,
 		};
-		if (options.output_format === 'json' && options.openapi_schema) {
+		if ((options.output_format === 'json' || options.output_format === 'csv') && options.openapi_schema) {
 			payload.openapi_schema = options.openapi_schema;
 		}
 		const requestOptions: IHttpRequestOptions = {

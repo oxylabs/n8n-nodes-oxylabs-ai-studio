@@ -65,18 +65,20 @@ export class OxylabsAiStudio implements INodeType {
 				options: [
 					{ name: 'Markdown', value: 'markdown' },
 					{ name: 'JSON', value: 'json' },
+					{ name: 'CSV', value: 'csv' },
+					{ name: 'Screenshot', value: 'screenshot' },
 				],
 				default: 'markdown',
 				displayOptions: { show: { resource: ['scraper'] } },
 				description:
-					'The format in which to return the extracted data. Choose between Markdown or JSON.',
+					'The format in which to return the extracted data. Choose between Markdown, JSON, CSV, or Screenshot.',
 				required: true,
 			},
 			{
 				displayName: 'JSON Schema',
 				name: 'scrapeJsonPydanticSchema',
 				type: 'json',
-				displayOptions: { show: { resource: ['scraper'], scrapeOutputFormat: ['json'] } },
+				displayOptions: { show: { resource: ['scraper'], scrapeOutputFormat: ['json', 'csv'] } },
 				default: null,
 				description: 'OpenAPI JSON schema',
 				required: true,
@@ -115,6 +117,7 @@ export class OxylabsAiStudio implements INodeType {
 				options: [
 					{ name: 'Markdown', value: 'markdown' },
 					{ name: 'JSON', value: 'json' },
+					{ name: 'CSV', value: 'csv' },
 				],
 				default: 'markdown',
 				displayOptions: { show: { resource: ['crawler'] } },
@@ -124,10 +127,10 @@ export class OxylabsAiStudio implements INodeType {
 				displayName: 'JSON Schema',
 				name: 'crawlJsonPydanticSchema',
 				type: 'json',
-				displayOptions: { show: { resource: ['crawler'], crawlOutputFormat: ['json'] } },
+				displayOptions: { show: { resource: ['crawler'], crawlOutputFormat: ['json', 'csv'] } },
 				default: '{}',
 				description:
-					'The openapi schema in JSON format that defines the structure of the output data. Required when output format is set to JSON.',
+					'The openapi schema in JSON format that defines the structure of the output data. Required when output format is set to JSON or CSV.',
 			},
 			{
 				displayName: 'Render JavaScript',
@@ -169,9 +172,10 @@ export class OxylabsAiStudio implements INodeType {
 				name: 'browseOutputFormat',
 				type: 'options',
 				options: [
-					{ name: 'Markdown', value: 'markdown' },
+					{ name: 'CSV', value: 'csv' },
 					{ name: 'HTML', value: 'html' },
 					{ name: 'JSON', value: 'json' },
+					{ name: 'Markdown', value: 'markdown' },
 					{ name: 'Screenshot', value: 'screenshot' },
 				],
 				default: 'markdown',
@@ -182,10 +186,10 @@ export class OxylabsAiStudio implements INodeType {
 				displayName: 'JSON Schema',
 				name: 'browseJsonPydanticSchema',
 				type: 'json',
-				displayOptions: { show: { resource: ['browserAgent'], browseOutputFormat: ['json'] } },
+				displayOptions: { show: { resource: ['browserAgent'], browseOutputFormat: ['json', 'csv'] } },
 				default: '{}',
 				description:
-					'The openapi schema in JSON format that defines the structure of the output data. Required when output format is set to JSON.',
+					'The openapi schema in JSON format that defines the structure of the output data. Required when output format is set to JSON or CSV.',
 			},
 
 			// Search parameters
@@ -251,7 +255,7 @@ export class OxylabsAiStudio implements INodeType {
 						output_format: output_format,
 						render_html: render_javascript,
 					};
-					if (output_format === 'json') {
+					if (output_format === 'json' || output_format === 'csv') {
 						let openapi_schema = this.getNodeParameter('scrapeJsonPydanticSchema', i, {}) ?? {};
 						if (typeof openapi_schema === 'string') {
 							openapi_schema = openapi_schema.trim() ? JSON.parse(openapi_schema) : {};
@@ -280,7 +284,7 @@ export class OxylabsAiStudio implements INodeType {
 						max_pages: max_pages,
 						render_html: render_javascript,
 					};
-					if (output_format === 'json') {
+					if (output_format === 'json' || output_format === 'csv') {
 						let openapi_schema = this.getNodeParameter('crawlJsonPydanticSchema', i, {}) ?? {};
 						if (typeof openapi_schema === 'string') {
 							openapi_schema = openapi_schema.trim() ? JSON.parse(openapi_schema) : {};
@@ -300,7 +304,7 @@ export class OxylabsAiStudio implements INodeType {
 						browse_prompt: user_prompt,
 						output_format: output_format,
 					};
-					if (output_format === 'json') {
+					if (output_format === 'json' || output_format === 'csv') {
 						let openapi_schema = this.getNodeParameter('browseJsonPydanticSchema', i, {}) ?? {};
 						if (typeof openapi_schema === 'string') {
 							openapi_schema = openapi_schema.trim() ? JSON.parse(openapi_schema) : {};

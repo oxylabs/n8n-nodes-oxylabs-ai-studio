@@ -17,7 +17,7 @@ export class AiScraperService extends BaseService {
 			output_format: options.output_format || 'markdown',
 			render_html: options.render_html || false,
 		};
-		if (options.output_format === 'json' && options.openapi_schema) {
+		if ((options.output_format === 'json' || options.output_format === 'csv') && options.openapi_schema) {
 			payload.openapi_schema = options.openapi_schema;
 		}
 		const requestOptions: IHttpRequestOptions = {
