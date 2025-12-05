@@ -13,22 +13,27 @@ export class AiCrawlerService extends BaseService {
 	}
 
 	/**
-	 * Submit crawling request (POST /extract/run)
+	 * Submit crawling request (POST /crawl/run)
 	 */
 	async submitCrawlRequest(options: CrawlOptions): Promise<RunResponse> {
 		const payload: any = {
-			domain: options.url, // Note: API expects 'domain' but we use 'url' for consistency
+			url: options.url,
 			output_format: options.output_format || 'markdown',
-			auxiliary_prompt: options.crawl_prompt,
-			render_html: options.render_html || false,
+			user_prompt: options.crawl_prompt,
+			render_javascript: options.render_javascript || false,
 			return_sources_limit: options.max_pages || 25,
 		};
-		if ((options.output_format === 'json' || options.output_format === 'csv') && options.openapi_schema) {
+		if (
+			(options.output_format === 'json' ||
+				options.output_format === 'csv' ||
+				options.output_format === 'toon') &&
+			options.openapi_schema
+		) {
 			payload.openapi_schema = options.openapi_schema;
 		}
 		const requestOptions: IHttpRequestOptions = {
 			method: 'POST',
-			url: `${this.apiUrl}/extract/run`,
+			url: `${this.apiUrl}/crawl/run`,
 			headers: {
 				Accept: 'application/json',
 				'Content-Type': 'application/json',
@@ -40,7 +45,7 @@ export class AiCrawlerService extends BaseService {
 	}
 
 	/**
-	 * Get crawling run data/results (GET /extract/run/data)
+	 * Get crawling run data/results (GET /crawl/run/data)
 	 */
 	async getCrawlRunData(runId: string): Promise<any> {
 		if (!runId) {
@@ -48,7 +53,7 @@ export class AiCrawlerService extends BaseService {
 		}
 		const requestOptions: IHttpRequestOptions = {
 			method: 'GET',
-			url: `${this.apiUrl}/extract/run/data`,
+			url: `${this.apiUrl}/crawl/run/data`,
 			headers: {
 				Accept: 'application/json',
 				'Content-Type': 'application/json',
@@ -74,7 +79,7 @@ export class AiCrawlerService extends BaseService {
 		}
 
 		const startTime = Date.now();
-		
+
 		while (Date.now() - startTime < timeout) {
 			try {
 				const response = await this.getCrawlRunData(runId);
@@ -98,16 +103,16 @@ export class AiCrawlerService extends BaseService {
 						status: response.status,
 						message: response.error_code || undefined,
 						data: null,
-					}
+					};
 				}
 
-			await sleep(pollInterval);
-		} catch (error: any) {
-			// 429 and 5xx are already handled by makeRequestWithRetry
-			// If we get here, it's a non-retryable error, so throw immediately
-			throw error;
+				await sleep(pollInterval);
+			} catch (error: any) {
+				// 429 and 5xx are already handled by makeRequestWithRetry
+				// If we get here, it's a non-retryable error, so throw immediately
+				throw error;
+			}
 		}
-	}
 
 		throw new Error(`Crawling timeout after ${timeout}ms`);
 	}

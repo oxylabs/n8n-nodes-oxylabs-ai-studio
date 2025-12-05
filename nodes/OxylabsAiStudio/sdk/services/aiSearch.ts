@@ -28,7 +28,7 @@ export class AiSearchService extends BaseService {
 			payload.limit = options.limit;
 		}
 		if (options.render_javascript !== undefined) {
-			payload.render_html = options.render_javascript;
+			payload.render_javascript = options.render_javascript;
 		}
 		if (options.return_content !== undefined) {
 			payload.return_content = options.return_content;

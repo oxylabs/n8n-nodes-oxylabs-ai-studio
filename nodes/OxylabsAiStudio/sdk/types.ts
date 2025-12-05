@@ -13,12 +13,14 @@ export enum ScraperOutputFormat {
 	JSON = 'json',
 	CSV = 'csv',
 	SCREENSHOT = 'screenshot',
+	TOON = 'toon',
 }
 
 export enum CrawlerOutputFormat {
 	MARKDOWN = 'markdown',
 	JSON = 'json',
 	CSV = 'csv',
+	TOON = 'toon',
 }
 
 export enum BrowserAgentOutputFormat {
@@ -27,6 +29,7 @@ export enum BrowserAgentOutputFormat {
 	CSV = 'csv',
 	HTML = 'html',
 	SCREENSHOT = 'screenshot',
+	TOON = 'toon',
 }
 
 export interface ApiResponse<T = any> {
@@ -55,7 +58,7 @@ export interface ScrapeOptions {
 	user_prompt?: string;
 	output_format?: ScraperOutputFormat | string;
 	openapi_schema?: Record<string, any>;
-	render_html?: boolean;
+	render_javascript?: boolean;
 }
 
 export interface CrawlOptions {
@@ -64,7 +67,7 @@ export interface CrawlOptions {
 	output_format?: CrawlerOutputFormat | string;
 	openapi_schema?: Record<string, any>;
 	max_pages?: number;
-	render_html?: boolean;
+	render_javascript?: boolean;
 }
 
 export interface BrowseOptions {
@@ -93,4 +96,24 @@ export interface SearchRunDataResponse {
 	status: 'processing' | 'completed' | 'failed';
 	message?: string | null;
 	data?: SearchResult[] | null;
+}
+
+export interface MapOptions {
+	url: string;
+	user_prompt?: string;
+	search_keywords?: string[];
+	max_crawl_depth?: number;
+	limit?: number;
+	geo_location?: string;
+	render_javascript?: boolean;
+	include_sitemap?: boolean;
+	max_credits?: number;
+	allow_subdomains?: boolean;
+	allow_external_domains?: boolean;
+}
+
+export interface MapRunDataResponse {
+	status: 'processing' | 'completed' | 'failed';
+	data?: any | null;
+	error_code?: string | null;
 }

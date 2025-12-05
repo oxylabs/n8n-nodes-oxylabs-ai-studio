@@ -26,18 +26,18 @@ export class BaseService {
 				// n8n uses error.httpCode as string (e.g., "429", "500")
 				const httpCode = error?.httpCode;
 				const numericStatusCode = typeof httpCode === 'string' ? parseInt(httpCode, 10) : httpCode;
-				
+
 				// Retry on 429 (rate limit) and 5xx (server errors)
-				const shouldRetry = (numericStatusCode === 429 || 
-				                    (numericStatusCode >= 500 && numericStatusCode < 600)) && 
-				                    attempt < retries;
-				
+				const shouldRetry =
+					(numericStatusCode === 429 || (numericStatusCode >= 500 && numericStatusCode < 600)) &&
+					attempt < retries;
+
 				if (shouldRetry) {
 					const delay = this.RETRY_DELAY * Math.pow(2, attempt); // Exponential backoff
 					await sleep(delay);
 					continue;
 				}
-				
+
 				// Don't retry, throw the error
 				throw error;
 			}
@@ -45,4 +45,3 @@ export class BaseService {
 		throw new Error('Max retries exceeded');
 	}
 }
-

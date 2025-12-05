@@ -18,9 +18,14 @@ export class BrowserAgentService extends BaseService {
 		const payload: any = {
 			url: options.url,
 			output_format: options.output_format || 'markdown',
-			auxiliary_prompt: options.browse_prompt,
+			user_prompt: options.browse_prompt,
 		};
-		if ((options.output_format === 'json' || options.output_format === 'csv') && options.openapi_schema) {
+		if (
+			(options.output_format === 'json' ||
+				options.output_format === 'csv' ||
+				options.output_format === 'toon') &&
+			options.openapi_schema
+		) {
 			payload.openapi_schema = options.openapi_schema;
 		}
 		const requestOptions: IHttpRequestOptions = {
@@ -31,26 +36,6 @@ export class BrowserAgentService extends BaseService {
 				'Content-Type': 'application/json',
 			},
 			body: payload,
-			json: true,
-		};
-		return await this.makeRequestWithRetry(requestOptions);
-	}
-
-	/**
-	 * Get browsing run status (GET /browser-agent/run/steps)
-	 */
-	async getBrowseRunSteps(runId: string): Promise<any> {
-		if (!runId) {
-			throw new Error('run_id is required');
-		}
-		const requestOptions: IHttpRequestOptions = {
-			method: 'GET',
-			url: `${this.apiUrl}/browser-agent/run/steps`,
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json',
-			},
-			qs: { run_id: runId },
 			json: true,
 		};
 		return await this.makeRequestWithRetry(requestOptions);
@@ -91,16 +76,16 @@ export class BrowserAgentService extends BaseService {
 		}
 		const startTime = Date.now();
 		while (Date.now() - startTime < timeout) {
-				const response = await this.getBrowseRunData(runId);
+			const response = await this.getBrowseRunData(runId);
 			if (response.status === 'processing') {
 				await sleep(pollInterval);
 				continue;
 			}
-			
+
 			if (response.status === 'completed') {
 				return response;
 			}
-			
+
 			if (response.status === 'failed') {
 				throw new Error(
 					`Browsing failed: ${response.error_code || response.message || 'Unknown error'}`,
