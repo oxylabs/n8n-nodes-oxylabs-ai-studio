@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-oxylabs-ai-studio",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "n8n node for Oxylabs AI Studio",
   "keywords": [
     "n8n-community-node-package"
