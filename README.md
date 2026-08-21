@@ -1,3 +1,5 @@
+[![Oxylabs promo code](https://github.com/oxylabs/n8n-nodes-oxylabs-ai-studio/blob/main/Github%20repositories%20banner%20v1%402x.png)](https://oxylabs.io/web-api-early-access?&utm_content=web_api_waitinglist&groupid=877)
+
 # n8n-nodes-oxylabs-ai-studio
 
 This is an n8n community node. It lets you use Oxylabs Ai Studio Apps in your n8n workflows.
