@@ -1,4 +1,4 @@
-[![Oxylabs promo code](https://github.com/oxylabs/n8n-nodes-oxylabs-ai-studio/blob/main/Github%20repositories%20banner%20v1%402x.png)](https://oxylabs.io/web-api-early-access?&utm_content=web_api_waitinglist&groupid=877)
+[![Oxylabs promo code](https://github.com/oxylabs/n8n-nodes-oxylabs-ai-studio/blob/master/Github%20repositories%20banner%20v1%402x.png)](https://oxylabs.io/web-api-early-access?&utm_content=web_api_waitinglist&groupid=877)
 
 # n8n-nodes-oxylabs-ai-studio
 
