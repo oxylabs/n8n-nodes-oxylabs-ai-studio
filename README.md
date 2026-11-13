@@ -1,4 +1,4 @@
-[![Oxylabs promo code](https://github.com/oxylabs/n8n-nodes-oxylabs-ai-studio/blob/master/Github%20repositories%20banner%20v1%402x.png)](https://oxylabs.io/web-api-early-access?utm_source=github&utm_medium=referral&utm_content=web_api_waitinglist&groupid=877)
+[![Oxylabs promo code](https://github.com/oxylabs/n8n-nodes-oxylabs-ai-studio/blob/master/Github%20repositories%20banner%20v1%401x.png)](https://oxylabs.io/web-api-early-access?utm_source=github&utm_medium=referral&utm_content=web_api_waitinglist&groupid=877)
 
 ## Disclaimer
 This repository is still fully supported, but if you are using Oxylabs Web API please refer to Web API n8n nodes repository:
